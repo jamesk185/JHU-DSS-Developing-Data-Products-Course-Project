@@ -56,8 +56,8 @@ Links
 ========================================================
 <font size="5">
 
-Open the following links in a new tab.
+Please open the links in new tabs/windows to view.
 
-- Shiny App: [https://jamesk185.shinyapps.io/ddpCourseProject/](https://jamesk185.shinyapps.io/ddpCourseProject/)
-- Code: [https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject](https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject)
+- Shiny App: https://jamesk185.shinyapps.io/ddpCourseProject/
+- Code: https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject
 <font size="5">
