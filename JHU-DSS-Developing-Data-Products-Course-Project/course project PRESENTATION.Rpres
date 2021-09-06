@@ -1,0 +1,121 @@
+Developing Data Products Course Project
+========================================================
+author: James Kowalik
+date: 06/09/2021
+autosize: true
+
+Introduction
+========================================================
+
+Completed as part of the Developing Data Products course in the Data Science Specialization by Johns Hopkins University. The instructions for this proeject were as follows.
+
+- "First, you will create a Shiny application and deploy it on Rstudio's servers. Second, you will use Slidify or Rstudio Presenter to prepare a reproducible pitch presentation about your application."
+
+My project is about the Covid-19 pandemic. As we approach a year and a half since the disease began to impact societies greatly all over the world, using maps created in plotly, I aim to provide a means for comparison between Covid-19 deaths in 2020 and in 2021. The user of my application will be able to see things such as which countries may have been largely unaffected by the initial outbreak but suffered from a huge relative increase in deaths as the virus spread further and wider. There will be 3 maps.
+
+- The total number of deaths up until August 24th 2020.
+- The total number of deaths up until August 24th 2021.
+- The percentage growth in deaths from August 24th 2020 to August 24th 2021.
+
+The Data
+========================================================
+
+```{r, echo=FALSE, messages=FALSE, warnings=FALSE}
+library(plotly)
+library(dplyr)
+URL2020 <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/08-24-2020.csv"
+    URL2021 <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/08-24-2021.csv"
+    URLcountries <- "https://raw.githubusercontent.com/albertyw/avenews/master/old/data/average-latitude-longitude-countries.csv"
+    
+    if(!file.exists("./08-24-2020.csv")){download.file(URL2020, "./08-24-2020.csv")}
+    if(!file.exists("./08-24-2021.csv")){download.file(URL2021, "./08-24-2021.csv")}
+    if(!file.exists("./countries.csv")){download.file(URLcountries, "./countries.csv")}
+    
+    data2020 <- read.csv("./08-24-2020.csv")
+    data2021 <- read.csv("./08-24-2021.csv")
+    countries <- read.csv("./countries.csv")
+```
+
+In order to use plotly, I had to build a single dataset that included the deaths in 2020 and 2021 and the latitude and longitude of each country. A lengthy process, including use of forloops, mutations, factor re-labelling and the like, ended with merging datsets to get a final dataset looking like this.
+```{r, echo=FALSE}
+    levels(countries$Country)[levels(countries$Country)=="United States"] <- "US"
+    levels(countries$Country)[levels(countries$Country)=="Myanmar"] <- "Burma"
+    levels(countries$Country)[levels(countries$Country)=="Cape Verde"] <- "Cabo Verde"
+    levels(countries$Country)[levels(countries$Country)=="Congo"] <- "Congo (Brazzaville)"
+    levels(countries$Country)[levels(countries$Country)=="Congo, The Democratic Republic of the"] <- "Congo (Kinshasa)"
+    levels(countries$Country)[levels(countries$Country)=="Czech Republic"] <- "Czechia"
+    levels(countries$Country)[levels(countries$Country)=="Swaziland"] <- "Eswatini"
+    levels(countries$Country)[levels(countries$Country)=="Iran, Islamic Republic of"] <- "Iran"
+    levels(countries$Country)[levels(countries$Country)=="Korea, Republic of"] <- "Korea, South"
+    levels(countries$Country)[levels(countries$Country)=="Lao People's Democratic Republic"] <- "Laos"
+    levels(countries$Country)[levels(countries$Country)=="Libyan Arab Jamahiriya"] <- "Libya"
+    levels(countries$Country)[levels(countries$Country)=="Moldova, Republic of"] <- "Moldova"
+    levels(countries$Country)[levels(countries$Country)=="Russian Federation"] <- "Russia"
+    levels(countries$Country)[levels(countries$Country)=="Syrian Arab Republic"] <- "Syria"
+    levels(data2020$Country_Region)[levels(data2020$Country_Region)=="Taiwan*"] <- "Taiwan"
+    levels(data2021$Country_Region)[levels(data2021$Country_Region)=="Taiwan*"] <- "Taiwan"
+    levels(countries$Country)[levels(countries$Country)=="Tanzania, United Republic of"] <- "Tanzania"
+    levels(countries$Country)[levels(countries$Country)=="Palestinian Territory"] <- "West Bank and Gaza"
+    
+    missCountries <- data.frame(ISO.3166.Country.Code = c("NM", "KO", "SS"), 
+                                Country = c("North Macedonia", "Kosovo", "South Sudan"), 
+                                Latitude = c(41.6086, 42.6026, 6.8770), 
+                                Longitude = c(21.7453, 20.9030, 31.3070))
+    
+    countries <- rbind(countries, missCountries)
+    
+    country_names_2020 <- unique(data2020$Country_Region)
+    
+    df1 <- data.frame(country = NULL, death_total_2020 = NULL)
+    for (x in country_names_2020){
+        death_total_2020 <- sum(data2020[data2020$Country_Region==x,]$Deaths)
+        country <- country_names_2020[country_names_2020==x]
+        df1 <- rbind(df1, c(country, death_total_2020))
+    }
+    
+    df1 <- cbind(Country = as.character(country_names_2020), df1) %>%
+        select(-2) %>% 
+        rename(Deaths_2020 = 2)
+    
+    country_names_2021 <- unique(data2021$Country_Region)
+    
+    df2 <- data.frame(country = NULL, death_total_2021 = NULL)
+    for (x in country_names_2021){
+        death_total_2021 <- sum(data2021[data2021$Country_Region==x,]$Deaths)
+        country <- country_names_2021[country_names_2021==x]
+        df2 <- rbind(df2, c(country, death_total_2021))
+    }
+    
+    df2 <- cbind(Country = as.character(country_names_2021), df2) %>%
+        select(-2) %>% 
+        rename(Deaths_2021 = 2)
+    
+    df3 <- merge(df1, df2, all = FALSE) %>% 
+        mutate(Percentage_Growth = signif(Deaths_2021/Deaths_2020, 3))
+```
+
+```{r}
+df4 <- merge(countries, df3, all = FALSE) %>% 
+        select(-2) %>%
+        rename(lat = 2, lng = 3)
+head(df4)
+```
+
+The Spread of the Data
+========================================================
+
+As can be seen in the following barplot, which shows the percentage growths, a lot of countries have growths over 100% (some even infinite as they had 0 deaths in the first year). This motivates use of sliders in my shiny app to facilitate comparison between countries that had similar figures. This, in effect, will be like 'zooming in' on certain ranges of numbers.
+```{r, echo=FALSE}
+df5 <- df4
+            df5$Percentage_Growth[is.na(df5$Percentage_Growth)] <- 0
+            df5$Percentage_Growth[df5$Percentage_Growth > 99] <- 99
+            df5$Percentage_Growth[df5$Percentage_Growth==Inf] <- 99
+df5 <- df5[order(df5$Percentage_Growth),]
+barplot(height=df5$Percentage_Growth, names=df5$Country)
+```
+
+Links
+========================================================
+
+- Shiny App: [https://jamesk185.shinyapps.io/ddpCourseProject/](https://jamesk185.shinyapps.io/ddpCourseProject/)
+- Code: [https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject](https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject)
