@@ -7,7 +7,7 @@ autosize: true
 Introduction
 ========================================================
 
-Completed as part of the Developing Data Products course in the Data Science Specialization by Johns Hopkins University. The instructions for this proeject were as follows.
+<font size="5">Completed as part of the Developing Data Products course in the Data Science Specialization by Johns Hopkins University. The instructions for this proeject were as follows.
 
 - "First, you will create a Shiny application and deploy it on Rstudio's servers. Second, you will use Slidify or Rstudio Presenter to prepare a reproducible pitch presentation about your application."
 
@@ -17,9 +17,11 @@ My project is about the Covid-19 pandemic. As we approach a year and a half sinc
 - The total number of deaths up until August 24th 2021.
 - The percentage growth in deaths from August 24th 2020 to August 24th 2021.
 
+</font>
+
 The Data
 ========================================================
-
+<font size="5">
 
 
 In order to use plotly, I had to build a single dataset that included the deaths in 2020 and 2021 and the latitude and longitude of each country. A lengthy process, including use of forloops, mutations, factor re-labelling and the like, ended with merging datsets to get a final dataset looking like this.
@@ -42,15 +44,20 @@ head(df4)
 5              Angola -12.50  18.5         100        1166             11.70
 6 Antigua and Barbuda  17.05 -61.8           3          43             14.30
 ```
+</font>
 
 The Spread of the Data
 ========================================================
-
+<font size="5">
 As can be seen in the following barplot, which shows the percentage growths, a lot of countries have growths over 100% (some even infinite as they had 0 deaths in the first year). This motivates use of sliders in my shiny app to facilitate comparison between countries that had similar figures. This, in effect, will be like 'zooming in' on certain ranges of numbers.
 ![plot of chunk unnamed-chunk-4](course project PRESENTATION-figure/unnamed-chunk-4-1.png)
-
+</font>
 Links
 ========================================================
+<font size="5">
+
+Open the following links in a new tab.
 
 - Shiny App: [https://jamesk185.shinyapps.io/ddpCourseProject/](https://jamesk185.shinyapps.io/ddpCourseProject/)
 - Code: [https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject](https://github.com/jamesk185/JHU-DSS-Developing-Data-Products-Course-Project/tree/main/JHU-DSS-Developing-Data-Products-Course-Project/ddpCourseProject)
+<font size="5">
