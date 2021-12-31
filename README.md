@@ -1,4 +1,4 @@
-# JHU DSS Developing Data Products Course Project
+# Interactive Mapping of Covid-19 Deaths 
 
 - Code for the shiny app is in the "ddpCourseProject" folder.
 
